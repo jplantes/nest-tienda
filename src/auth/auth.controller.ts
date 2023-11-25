@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
 
-import { GetUser, RawHeader, RoleProtected } from './decorators';
+import { Auth, GetUser, RawHeader, RoleProtected } from './decorators';
 import { UserRoleGuard } from './guards/user-role/user-role.guard';
 import { ValidRoles } from './interfaces/valid-roles.interface';
 
@@ -22,8 +22,6 @@ export class AuthController {
     return this.authService.create(createUserDto);
   }
 
-
-
   @Post('login')
   loginUser(
     @Body() loginUserDto: LoginUserDto
@@ -31,6 +29,13 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
+  @Get('checkauthstatus')
+  @Auth()
+  checkAuthStatus(
+    @GetUser() user: User
+  ) {
+    return this.authService.checkAuthStatus( user );
+  }
 
   @Get('private')
   @UseGuards( AuthGuard() )
@@ -56,6 +61,18 @@ export class AuthController {
   @RoleProtected( ValidRoles.superUser, ValidRoles.admin )
   @UseGuards( AuthGuard(), UserRoleGuard )
   privateRouter2(
+    @GetUser() user: User,
+  ){
+
+    return {
+      ok: true,
+      user
+    }
+  }
+
+  @Get('private3')
+  @Auth( ValidRoles.user )
+  privateRouter3(
     @GetUser() user: User,
   ){
 

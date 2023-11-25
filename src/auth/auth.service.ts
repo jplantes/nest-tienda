@@ -52,9 +52,19 @@ export class AuthService {
       select: { email: true, password: true, id: true },
     });
 
-    if ( !user ) throw new UnauthorizedException('Error usuario o contraseña (u)');
-    if ( bcrypt.compareSync(password, user.password ) ) throw new UnauthorizedException('Error usuario o contraseña (p)');
+    if ( !user ) 
+      throw new UnauthorizedException('Error usuario o contraseña (u)');
+    
+    if ( !bcrypt.compareSync(password, user.password ) ) 
+      throw new UnauthorizedException('Error usuario o contraseña (p)');
 
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id })
+    };
+  }
+
+  async checkAuthStatus ( user: User ) {
     return {
       ...user,
       token: this.getJwtToken({ id: user.id })

@@ -16,6 +16,11 @@ export class UserRoleGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const validRoles: string[] = this.reflector.get(META_ROLES, context.getHandler() );
+
+    // Si no se especifica en el decorador ningun rol lo dejo pasar porque solo me interesa que este autenticado
+    if ( !validRoles ) return true;
+    if ( validRoles.length === 0 ) return true;
+
     const req = context.switchToHttp().getRequest();
     const user = req.user as User;
 
