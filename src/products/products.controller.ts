@@ -5,13 +5,20 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginetionDto } from 'src/common/dtos/pagination.dto';
 import { Auth, GetUser } from 'src/auth/decorators';
 import { User } from 'src/auth/entities/user.entity';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Product } from './entities';
 
+
+@ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
   @Auth()
+  @ApiResponse({ status: 201, description: "Producto creado correctamente", type: Product})
+  @ApiResponse({ status: 400, description: "Petición no valida"})
+  @ApiResponse({ status: 403, description: "Tocken no valida"})
   create(
     @Body() createProductDto: CreateProductDto,
     @GetUser() user: User,
